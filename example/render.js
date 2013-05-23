@@ -11,6 +11,6 @@ module.exports = function () {
         this.queue(hyperglue(html, {
             '.who': row.who,
             '.message': row.message
-        }).innerHTML);
+        }).outerHTML);
     });
 };
