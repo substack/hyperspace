@@ -16,9 +16,12 @@ var server = http.createServer(function (req, res) {
         hs.pipe(res);
         fs.createReadStream(__dirname + '/static/index.html').pipe(hs);
     }
-    else if (req.url === '/stream') {
-        sf.follow(-1,0).pipe(res);
-    }
     else ecstatic(req, res)
 });
 server.listen(8000);
+
+var shoe = require('shoe');
+var sock = shoe(function (stream) {
+    sf.follow(-1,0).pipe(stream);
+});
+sock.install(server, '/sock');
