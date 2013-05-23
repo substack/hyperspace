@@ -11,7 +11,7 @@ var render = require('./render');
 var server = http.createServer(function (req, res) {
     if (req.url === '/') {
         var hs = hyperstream({
-            '#rows': sf.tail(-5).pipe(render())
+            '#rows': sf.slice(-5).pipe(render())
         });
         hs.pipe(res);
         fs.createReadStream(__dirname + '/static/index.html').pipe(hs);
