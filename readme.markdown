@@ -30,7 +30,7 @@ module.exports = function () {
         this.queue(hyperglue(html, {
             '.who': row.who,
             '.message': row.message
-        }).innerHTML);
+        }).outerHTML);
     });
 };
 ```
@@ -94,7 +94,6 @@ from [shoe](http://github.com/substack/shoe) into the `#rows` div:
 
 ``` js
 var through = require('through');
-var domify = require('domify');
 var render = require('./render');
 
 var shoe = require('shoe');
@@ -102,10 +101,7 @@ var stream = shoe('/sock');
 
 var rows = document.querySelector('#rows');
 stream.pipe(render()).pipe(through(function (html) {
-    var elems = domify(html);
-    for (var i = 0; i < elems.length; i++) {
-        rows.appendChild(elems[i]);
-    }
+    rows.innerHTML += html;
 }));
 ```
 
