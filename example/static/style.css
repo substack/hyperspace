@@ -1,0 +1,15 @@
+h1 {
+    color: rgb(60,60,150);
+}
+
+.row {
+    background-color: rgb(200,200,230);
+    padding: 20px;
+    width: 500px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.row .who {
+    color: rgb(60,60,150);
+}

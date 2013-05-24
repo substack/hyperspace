@@ -10,11 +10,9 @@ var render = require('./render');
 
 var server = http.createServer(function (req, res) {
     if (req.url === '/') {
-        var hs = hyperstream({
-            '#rows': sf.slice(-5).pipe(render())
-        });
-        hs.pipe(res);
-        fs.createReadStream(__dirname + '/static/index.html').pipe(hs);
+        var hs = hyperstream({ '#rows': sf.slice(-5).pipe(render()) });
+        var rs = fs.createReadStream(__dirname + '/static/index.html');
+        rs.pipe(hs).pipe(res);
     }
     else ecstatic(req, res)
 });

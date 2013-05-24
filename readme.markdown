@@ -6,7 +6,10 @@ Currently this library is just an example with no module since there isn't
 anything necessary aside from some already-existing libraries.
 
 Just write your shared rendering logic as a stream that it will work in both
-places. Here we're using
+places.
+
+
+Here we're using
 [brfs](http://github.com/substack/brfs) to inline static assets
 and [hyperglue](https://github.com/substack/hyperglue) to update html based on
 css selectors but anything that can return an html string will work.
