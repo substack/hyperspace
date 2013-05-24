@@ -12,7 +12,7 @@ var render = require('./render');
 var server = http.createServer(function (req, res) {
     if (req.url === '/') {
         var hs = hyperstream({
-            '#rows': sf.slice(-5).pipe(reverse()).pipe(render())
+            '#rows': sf.sliceReverse(-5).pipe(render())
         });
         var rs = fs.createReadStream(__dirname + '/static/index.html');
         rs.pipe(hs).pipe(res);
@@ -26,14 +26,3 @@ var sock = shoe(function (stream) {
     sf.follow(-1,0).pipe(stream);
 });
 sock.install(server, '/sock');
-
-function reverse () {
-    var lines = [];
-    return through(write, end);
-    
-    function write (line) { lines.unshift(line) }
-    function end () {
-        lines.forEach(this.queue.bind(this));
-        this.queue(null);
-    }
-}
