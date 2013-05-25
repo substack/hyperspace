@@ -52,10 +52,8 @@ from the `row.html` which looks like:
 row.html:
 
 ``` html
-<div class="row">
   <div class="who"></div>
   <div class="message"></div>
-</div>
 ```
 
 The browser code to render this is super simple. We can just `require()` the
