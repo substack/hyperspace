@@ -5,6 +5,12 @@ render streams of content on the client and the server
 Use the same rendering logic in the browser and the server to build
 SEO-friendly pages with indexable realtime updates.
 
+This module is just an encapsulation of
+[the streaming html example](https://github.com/substack/stream-handbook#html-streams-for-the-browser-and-the-server)
+from the stream handbook that uses
+[hyperglue](https://github.com/substack/hyperglue) and json internally instead
+of externally.
+
 # example
 
 First pick a stream data source that will give you records and let you subscribe
@@ -152,3 +158,59 @@ then the page updates automatically with the realtime updates, hooray!
 
 We're now using exactly the same rendering logic on both the client and the
 server to serve up SEO-friendly, indexable realtime content.
+
+# methods
+
+```
+var hyperstream = require('hyperstream')
+```
+
+# var render = hyperstream(html, f)
+
+Return a new `render` through stream that takes json strings or objects as input
+and outputs a stream of html strings after applying the transformations from
+`f(row)`.
+
+`f(row)` gets an object from the data source as input and should return an
+object of [hyperglue](https://github.com/substack/hyperglue) css selectors
+mapped to content and attributes or a falsy value if nothing should be rendered
+for the given `row`.
+
+# browser methods
+
+These methods only apply browser-side because they deal with how to handle the
+realtime update stream.
+
+## render.appendTo(target)
+
+Append the html elements created from the hyperstream transform function
+`f(row)` directly to `target`.
+
+`target` can be an html element or a css selector.
+
+## render.prependTo(target)
+
+Prepend the html elements created from the hyperstream transform function
+`f(row)` directly to `target`.
+
+`target` can be an html element or a css selector.
+
+# browser events
+
+## render.on('element', function (elem) {})
+
+This event fires for all elements created by the result stream, including those
+elements created server-side so long as `.prependTo()` or `.appendTo()` as been
+called on the same container that the server populated content with.
+
+# install
+
+With [npm](https://npmjs.org) do:
+
+```
+npm install hyperstream
+```
+
+# license
+
+MIT
