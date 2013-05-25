@@ -1,2 +1,2 @@
 #!/bin/bash
-browserify -t brfs browser.js > static/bundle.js
+browserify -t brfs browser.js $* > static/bundle.js

@@ -1,5 +1,25 @@
+body {
+    font-family: sans-serif;
+}
+
 h1 {
     color: rgb(60,60,150);
+}
+
+#more {
+    padding: 20px;
+    width: 540px;
+    background-color: rgb(100,100,255);
+    color: rgb(200,200,230);
+    font-weight: bold;
+    font-size: 1.4em;
+    border-width: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#more:hover {
+    background-color: rgb(50,50,230);
 }
 
 .row {
@@ -17,7 +37,7 @@ h1 {
 
 .row .time {
     position: absolute;
-    right: 10px;
+    right: 20px;
     top: 10px;
     color: rgb(100,100,150);
 }
