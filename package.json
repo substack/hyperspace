@@ -1,6 +1,0 @@
-{
-  "name": "hyperspace",
-  "version": "0.0.0",
-  "main": "index.js",
-  "browser": "browser.js"
-}

@@ -1,44 +1,47 @@
 # hyperspace
 
-render streams on the client and the server
+render streams of content on the client and the server
 
-Currently this library is just an example with no module since there isn't
-anything necessary aside from some already-existing libraries.
+Use the same rendering logic in the browser and the server to build
+SEO-friendly pages with indexable realtime updates.
 
-Just write your shared rendering logic as a stream that it will work in both
-places.
+# example
 
+First pick a stream data source that will give you records and let you subscribe
+to a changes feed. In this example we'll use
+[slice-file](https://github.com/substack/slice-file) to read from a single text
+file to simplify the example code.
 
-Here we're using
-[brfs](http://github.com/substack/brfs) to inline static assets
-and [hyperglue](https://github.com/substack/hyperglue) to update html based on
-css selectors but anything that can return an html string will work.
-
-Our renderer takes lines of json as input and returns html strings as its
-output. Text, the universal interface!
+Let's start with the rendering logic that will be used on both the client and
+the server:
 
 render.js:
 
 ``` js
-var through = require('through');
-var hyperglue = require('hyperglue');
+var hyperspace = require('hyperspace');
 var fs = require('fs');
 var html = fs.readFileSync(__dirname + '/static/row.html');
 
 module.exports = function () {
-    return through(function (line) {
-        try { var row = JSON.parse(line) }
-        catch (err) { return this.emit('error', err) }
-        
-        this.queue(hyperglue(html, {
+    return hyperspace(html, function (row) {
+        return {
             '.who': row.who,
             '.message': row.message
-        }).outerHTML);
+        };
     });
 };
 ```
 
-the row.html is just a really simple stub thing:
+The return value of `hyperspace()` is a stream that takes lines of json as input
+and returns html strings as its output. Text, the universal interface!
+
+We're doing `fs.readFileSync()` in this shared rendering code but we can use
+[brfs](http://github.com/substack/brfs) to make this work for the browser using
+[browserify](http://browserify.org). The callback to `hyperspace()` merely
+takes `row` objects and returns
+[hyperglue](https://github.com/substack/hyperglue) mapping of css selectors to
+content and attributes. Here we're updating the `"who"` and `"message"` divs
+from the `row.html` which looks like:
 
 row.html:
 
@@ -49,10 +52,26 @@ row.html:
 </div>
 ```
 
-The server will just use [slice-file](https://github.com/substack/slice-file) to
-keep everything simple. [slice-file](https://github.com/substack/slice-file) is
-little more than a glorified `tail/tail -f` api but the interfaces map well to
-databases with regular results plus a changes feed like couchdb.
+The browser code to render this is super simple. We can just `require()` the
+shared `render.js` file and hook that into a stream. In this example we'll use
+[shoe](http://github.com/substack/shoe) to open a simple streaming websocket
+connection with fallbacks:
+
+browser.js:
+
+``` js
+var shoe = require('shoe');
+var render = require('./render');
+
+shoe('/sock').pipe(render().appendTo('#rows'));
+```
+
+Now our server will need to serve up 2 parts of our data stream: the initial
+content list and the stream of realtime updates. We'll use
+[hyperstream](https://github.com/substack/hyperstream) to pipe content rendered
+with our `render.js` from before into the `#rows` div of our `index.html` file.
+Then we'll use [shoe](http://github.com/substack/shoe) to pipe the rest of the
+content to the browser where it can be rendered client-side.
 
 server.js:
 
@@ -69,11 +88,9 @@ var render = require('./render');
 
 var server = http.createServer(function (req, res) {
     if (req.url === '/') {
-        var hs = hyperstream({
-            '#rows': sf.slice(-5).pipe(render())
-        });
-        hs.pipe(res);
-        fs.createReadStream(__dirname + '/static/index.html').pipe(hs);
+        var hs = hyperstream({ '#rows': sf.slice(-5).pipe(render()) });
+        var rs = fs.createReadStream(__dirname + '/static/index.html');
+        rs.pipe(hs).pipe(res);
     }
     else ecstatic(req, res)
 });
@@ -86,36 +103,31 @@ var sock = shoe(function (stream) {
 sock.install(server, '/sock');
 ```
 
-The first part of the server handles the `/` route and streams the last 5 lines
-from `data.txt` into the `#rows` div.
+And our `index.html` file is just:
 
-The second part of the server handles realtime updates to `#rows` using
-[shoe](http://github.com/substack/shoe), a simple streaming websocket polyfill.
+index.html
 
-Next we can write some simple browser code to populate the realtime updates
-from [shoe](http://github.com/substack/shoe) into the `#rows` div:
-
-``` js
-var through = require('through');
-var render = require('./render');
-
-var shoe = require('shoe');
-var stream = shoe('/sock');
-
-var rows = document.querySelector('#rows');
-stream.pipe(render()).pipe(through(function (html) {
-    rows.innerHTML += html;
-}));
+``` html
+<html>
+  <head>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <h1>rows</h1>
+    <div id="rows"></div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
 ```
 
-Just compile with [browserify](http://browserify.org) and
+Now just compile with [browserify](http://browserify.org) and
 [brfs](http://github.com/substack/brfs):
 
 ```
 $ browserify -t brfs browser.js > static/bundle.js
 ```
 
-And that's it! Now we can populate `data.txt` with some silly data:
+Now we can populate `data.txt` with some silly data:
 
 ```
 $ echo '{"who":"substack","message":"beep boop."}' >> data.txt
@@ -139,4 +151,4 @@ $ echo '{"who":"zoltar","message":"HEAR ME!"}' >> data.txt
 then the page updates automatically with the realtime updates, hooray!
 
 We're now using exactly the same rendering logic on both the client and the
-server to serve up SEO-friendly, indexable realtime content. Hooray!
+server to serve up SEO-friendly, indexable realtime content.
