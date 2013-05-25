@@ -28,19 +28,19 @@ var sock = shoe(function (stream) {
     stream.pipe(split()).pipe(through(function (line) {
         var offsets = JSON.parse(line);
         sf.sliceReverse(offsets[0], offsets[1])
-            .pipe(insertBoundary())
+            .pipe(insertBoundary(offsets[0], offsets[1]))
             .pipe(stream)
         ;
     }));
 });
 sock.install(server, '/sock');
 
-function insertBoundary () {
+function insertBoundary (i, j) {
     // add a `false` to the result stream when there are no more records
     var count = 0;
     return through(write, end);
     function write (line) { count ++; this.queue(line) }
     function end () {
-        if (count === 0) this.queue('false\n');
+        if (count < j - i) this.queue('false\n');
     }
 }
