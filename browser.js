@@ -27,8 +27,7 @@ module.exports = function (html, cb) {
     });
     
     tr.prependTo = function (t) {
-        var target = getElem(t);
-        findElems(target);
+        var target = getTarget(t);
         
         tr.on('element', function (elem) {
             target.insertBefore(elem, target.childNodes[0]);
@@ -37,8 +36,7 @@ module.exports = function (html, cb) {
     };
     
     tr.appendTo = function (t) {
-        var target = getElem(t);
-        findElems(target);
+        var target = getTarget(t);
         
         tr.on('element', function (elem) {
             target.appendChild(elem);
@@ -46,18 +44,45 @@ module.exports = function (html, cb) {
         return tr;
     };
     
+    tr.sortTo = function (t, cmp) {
+        if (typeof cmp !== 'function') {
+            throw new Error('comparison function not provided');
+        }
+        var target = getElem(t);
+        
+        tr.on('element', function (elem) {
+            var nodes = target.getElementsByClassName(className);
+            for (var i = 0; i < nodes.length; i++) {
+                var n = cmp(elem, nodes[i]);
+                if (n < 0) {
+                    if (target.hasChildNodes(elem)) {
+                        target.removeChild(elem);
+                    }
+                    target.insertBefore(elem, nodes[i]);
+                    return;
+                }
+            }
+            target.appendChild(elem);
+        });
+        
+        getTarget(t, target);
+        return tr;
+    };
+    
     var emittedElements = false;
     return tr;
     
-    function findElems (target) {
-        if (!className) return;
-        if (emittedElements) return;
+    function getTarget (t, target) {
+        if (!target) target = getElem(t);
+        if (!className) return target;
+        if (emittedElements) return target;
         emittedElements = true;
         
-        var elems = target.querySelectorAll('.' + className);
+        var elems = target.getElementsByClassName(className);
         for (var i = 0; i < elems.length; i++) {
             tr.emit('element', elems[i]);
         }
+        return target;
     }
 };
 
