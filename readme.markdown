@@ -72,6 +72,10 @@ var render = require('./render');
 shoe('/sock').pipe(render().appendTo('#rows'));
 ```
 
+If you need to do something with each rendered row you can just listen for
+`'element'` events from the `render()` object to get each element from the
+dataset, including the elements that were rendered server-side.
+
 Now our server will need to serve up 2 parts of our data stream: the initial
 content list and the stream of realtime updates. We'll use
 [hyperstream](https://github.com/substack/hyperstream) to pipe content rendered
