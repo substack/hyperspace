@@ -1,6 +1,6 @@
 # hyperspace
 
-render streams of content on the client and the server
+render streams of html on the client and the server
 
 Use the same rendering logic in the browser and the server to build
 SEO-friendly pages with indexable realtime updates.

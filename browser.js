@@ -1,7 +1,10 @@
 var through = require('through');
 var hyperglue = require('hyperglue');
+var domify = require('domify');
 
 module.exports = function (html, cb) {
+    var className = classNameOf(html);
+    
     var tr = through(function (line) {
         var row;
         if (isInt8Array(line)) {
@@ -25,6 +28,8 @@ module.exports = function (html, cb) {
     
     tr.prependTo = function (t) {
         var target = getElem(t);
+        findElems(target);
+        
         tr.on('element', function (elem) {
             target.insertBefore(elem, target.childNodes[0]);
         });
@@ -33,14 +38,33 @@ module.exports = function (html, cb) {
     
     tr.appendTo = function (t) {
         var target = getElem(t);
+        findElems(target);
+        
         tr.on('element', function (elem) {
             target.appendChild(elem);
         });
         return tr;
     };
     
+    var emittedElements = false;
     return tr;
+    
+    function findElems (target) {
+        if (!className) return;
+        if (emittedElements) return;
+        emittedElements = true;
+        
+        var elems = target.querySelectorAll('.' + className);
+        for (var i = 0; i < elems.length; i++) {
+            tr.emit('element', elems[i]);
+        }
+    }
 };
+
+function classNameOf (html) {
+    var elems = domify(html);
+    if (elems.length) return elems[0].getAttribute('class');
+}
 
 function getElem (target) {
     if (typeof target === 'string') {
