@@ -18,7 +18,7 @@ module.exports = function (html, cb) {
         }
         else row = line;
         
-        var res = cb(row);
+        var res = cb.call(this, row);
         if (res) {
             var elem = hyperglue(html, res);
             this.emit('element', elem);
