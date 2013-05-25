@@ -13,6 +13,8 @@ of externally.
 
 # example
 
+## simple
+
 First pick a stream data source that will give you records and let you subscribe
 to a changes feed. In this example we'll use
 [slice-file](https://github.com/substack/slice-file) to read from a single text
@@ -162,6 +164,141 @@ then the page updates automatically with the realtime updates, hooray!
 
 We're now using exactly the same rendering logic on both the client and the
 server to serve up SEO-friendly, indexable realtime content.
+
+## requesting more data
+
+We can extend the previous example with a "more" button to load more content on
+demand using the existing streams and rendering logic already in place.
+
+We'll first supplement the rendering in `server.js` to parse incoming requests
+offsets:
+
+``` js
+var sock = shoe(function (stream) {
+    sf.follow(-1,0).pipe(stream);
+    stream.pipe(split()).pipe(through(function (line) {
+        var offsets = JSON.parse(line);
+        sf.sliceReverse(offsets[0], offsets[1]).pipe(stream);
+    }));
+});
+```
+
+Now when the browser sends us a json array `[i,j]`, we'll send back the reversed
+slice from `data.txt` at those indices.
+
+However, now results arrive both from realtime updates and from requested
+offsets on the same websocket stream so we'll need to add some additional data
+to our data and rendering logic in `render.js`.
+
+Add a `<div class="time"></div>` to `row.html` then set that element to
+`row.time`:
+
+``` js
+module.exports = function () {
+    return hyperspace(html, function (row) {
+        return {
+            '.time': row.time,
+            '.who': row.who,
+            '.message': row.message
+        };
+    });
+};
+```
+
+Now we can add a more button to the `index.html` and bind a click handler in the
+`browser.js` to request more rows given the `count` of rows we've already
+observed. The comparison function passed to `.sortTo()` will make sure that all
+the results end up in the proper order no matter if they arrived from a realtime
+update or a requested slice:
+
+```
+var shoe = require('shoe');
+var render = require('./render')();
+
+var count = 0;
+render.on('element', function (elem) { count ++ });
+
+var more = document.querySelector('#more');
+more.addEventListener('click', function (ev) {
+    stream.write(JSON.stringify([ -count-3, -count ]) + '\n');
+});
+
+var stream = shoe('/sock');
+stream.pipe(render.sortTo('#rows', cmp));
+
+function cmp (a, b) {
+    var at = Number(a.querySelector('.time').textContent);
+    var bt = Number(b.querySelector('.time').textContent);
+    return bt - at;
+}
+```
+
+And now we have an seo-friendly, indexable feed with realtime updates and a
+"more" button to load more content!
+
+## no more
+
+For a simple extension to the previous example, we can remove the "more" button
+once the end of the feed is reached by sending a `false` row in the result set
+to specify a "no more" boundary.
+
+In the server.js we can just pipe through an intermediary stream:
+
+``` js
+var shoe = require('shoe');
+var sock = shoe(function (stream) {
+    sf.follow(-1,0).pipe(stream);
+    stream.pipe(split()).pipe(through(function (line) {
+        var offsets = JSON.parse(line);
+        sf.sliceReverse(offsets[0], offsets[1])
+            .pipe(insertBoundary(offsets[0], offsets[1]))
+            .pipe(stream)
+        ;
+    }));
+});
+sock.install(server, '/sock');
+
+function insertBoundary (i, j) {
+    // add a `false` to the result stream when there are no more records
+    var count = 0;
+    return through(write, end);
+    function write (line) { count ++; this.queue(line) }
+    function end () {
+        if (count < j - i) this.queue('false\n');
+    }
+}
+```
+
+then our `render.js` can emit a `'no-more'` event when it finds a falsy row:
+
+``` js
+module.exports = function () {
+    return hyperspace(html, function (row) {
+        if (!row) {
+            this.emit('no-more');
+            return undefined;
+        }
+        return {
+            '.time': row.time,
+            '.who': row.who,
+            '.message': row.message
+        };
+    });
+};
+```
+
+and we can listen for the `'no-more'` event in `browser.js`:
+
+```
+render.on('no-more', function () {
+    more.parentNode.removeChild(more);
+});
+```
+
+which removes the `more` button from the page when the end of the feed is
+reached.
+
+The complete code for this demo is in `example/more`.
 
 # methods
 
