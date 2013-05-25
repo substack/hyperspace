@@ -55,7 +55,7 @@ module.exports = function (html, cb) {
             for (var i = 0; i < nodes.length; i++) {
                 var n = cmp(elem, nodes[i]);
                 if (n < 0) {
-                    if (target.hasChildNodes(elem)) {
+                    if (hasChild(target, elem)) {
                         target.removeChild(elem);
                     }
                     target.insertBefore(elem, nodes[i]);
@@ -89,6 +89,14 @@ module.exports = function (html, cb) {
 function classNameOf (html) {
     var elems = domify(html);
     if (elems.length) return elems[0].getAttribute('class');
+}
+
+function hasChild (node, child) {
+    var nodes = node.childNodes;
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i] === child) return true;
+    }
+    return false;
 }
 
 function getElem (target) {
