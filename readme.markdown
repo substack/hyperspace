@@ -199,6 +199,14 @@ Prepend the html elements created from the hyperstream transform function
 
 `target` can be an html element or a css selector.
 
+## render.sortTo(target, cmp)
+
+Insert the html elements created from the hyperstream transform function
+`f(row)` to `target` using the sorting function `cmp(a, b)` for each html
+element `a` and `b` to be sorted.
+
+`target` can be an html element or a css selector.
+
 # browser events
 
 ## render.on('element', function (elem) {})
