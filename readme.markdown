@@ -60,7 +60,29 @@ row.html:
 </div>
 ```
 
-The browser code to render this is super simple. We can just `require()` the
+It's easy to pipe some data the renderer in stdout
+
+```
+var r = require('./render')();
+r.pipe(process.stdout);
+r.write(JSON.stringify({ who: 'substack', message: 'beep boop' }) + '\n');
+r.write(JSON.stringify({ who: 'h4ckr', message: 'h4x' }) + '\n');
+```
+
+which prints:
+
+```
+<div class="row">
+  <div class="who">substack</div>
+  <div class="message">beep boop</div>
+</div>
+<div class="row">
+  <div class="who">h4ckr</div>
+  <div class="message">h4x</div>
+</div>
+```  
+
+To make the rendering code work in browsers, we can just `require()` the
 shared `render.js` file and hook that into a stream. In this example we'll use
 [shoe](http://github.com/substack/shoe) to open a simple streaming websocket
 connection with fallbacks:
@@ -77,6 +99,8 @@ shoe('/sock').pipe(render().appendTo('#rows'));
 If you need to do something with each rendered row you can just listen for
 `'element'` events from the `render()` object to get each element from the
 dataset, including the elements that were rendered server-side.
+
+## hooking up a data feed
 
 Now our server will need to serve up 2 parts of our data stream: the initial
 content list and the stream of realtime updates. We'll use
@@ -211,7 +235,7 @@ observed. The comparison function passed to `.sortTo()` will make sure that all
 the results end up in the proper order no matter if they arrived from a realtime
 update or a requested slice:
 
-```
+``` js
 var shoe = require('shoe');
 var render = require('./render')();
 
@@ -289,7 +313,7 @@ module.exports = function () {
 
 and we can listen for the `'no-more'` event in `browser.js`:
 
-```
+``` js
 render.on('no-more', function () {
     more.parentNode.removeChild(more);
 });
@@ -302,7 +326,7 @@ The complete code for this demo is in `example/more`.
 
 # methods
 
-```
+``` js
 var hyperstream = require('hyperstream')
 ```
 
