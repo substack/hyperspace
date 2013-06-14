@@ -106,8 +106,8 @@ function getElem (target) {
     return target;
 }
 
-function isInt8Array (x) {
-    return x && typeof x === 'object'
+function isInt8Array (line) {
+    return line && typeof line === 'object'
         && line.constructor === 'function'
         && line.constructor.name === 'Int8Array'
     ;
