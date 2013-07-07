@@ -11,6 +11,8 @@ from the stream handbook that uses
 [hyperglue](https://github.com/substack/hyperglue) and json internally instead
 of externally.
 
+![hyperspace](http://substack.net/images/hyperspace.png)
+
 # example
 
 ## simple
