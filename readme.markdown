@@ -82,7 +82,7 @@ which prints:
   <div class="who">h4ckr</div>
   <div class="message">h4x</div>
 </div>
-```  
+```
 
 To make the rendering code work in browsers, we can just `require()` the
 shared `render.js` file and hook that into a stream. In this example we'll use
@@ -329,10 +329,10 @@ The complete code for this demo is in `example/more`.
 # methods
 
 ``` js
-var hyperstream = require('hyperstream')
+var hyperspace = require('hyperspace')
 ```
 
-# var render = hyperstream(html, f)
+# var render = hyperspace(html, f)
 
 Return a new `render` through stream that takes json strings or objects as input
 and outputs a stream of html strings after applying the transformations from
@@ -350,21 +350,21 @@ realtime update stream.
 
 ## render.appendTo(target)
 
-Append the html elements created from the hyperstream transform function
+Append the html elements created from the hyperspace transform function
 `f(row)` directly to `target`.
 
 `target` can be an html element or a css selector.
 
 ## render.prependTo(target)
 
-Prepend the html elements created from the hyperstream transform function
+Prepend the html elements created from the hyperspace transform function
 `f(row)` directly to `target`.
 
 `target` can be an html element or a css selector.
 
 ## render.sortTo(target, cmp)
 
-Insert the html elements created from the hyperstream transform function
+Insert the html elements created from the hyperspace transform function
 `f(row)` to `target` using the sorting function `cmp(a, b)` for each html
 element `a` and `b` to be sorted.
 
@@ -383,7 +383,7 @@ called on the same container that the server populated content with.
 With [npm](https://npmjs.org) do:
 
 ```
-npm install hyperstream
+npm install hyperspace
 ```
 
 # license
