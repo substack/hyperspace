@@ -378,6 +378,11 @@ This event fires for all elements created by the result stream, including those
 elements created server-side so long as `.prependTo()` or `.appendTo()` as been
 called on the same container that the server populated content with.
 
+## render.on('parent', function (elem) {})
+
+This event fires with the container element when `.appendTo()`, `.prependTo()`,
+or `.sortTo()` is called.
+
 # install
 
 With [npm](https://npmjs.org) do:

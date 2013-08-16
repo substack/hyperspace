@@ -74,6 +74,7 @@ module.exports = function (html, cb) {
     
     function getTarget (t, target) {
         if (!target) target = getElem(t);
+        tr.emit('parent', target);
         if (!className) return target;
         if (emittedElements) return target;
         emittedElements = true;
