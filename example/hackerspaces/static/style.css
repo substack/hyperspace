@@ -1,0 +1,9 @@
+.hacker .field {
+  display: inline-block;
+  width: 75px;
+  color: rgb(100,100,100);
+}
+
+.hacker .value {
+  display: inline-block;
+}

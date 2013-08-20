@@ -6,7 +6,7 @@ module.exports = function () {
     return hyperspace(html, function (row) {
         return {
             '.name': row.value.name,
-            '.hackers': 'PLACEHOLDER'
+            '.hackers': row.value.hackers().pipe(renderHacker())
         };
     });
 };

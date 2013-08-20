@@ -1,8 +1,11 @@
-var through = require('through');
 var hyperglue = require('hyperglue');
+var trumpet = require('trumpet');
+var Transform = require('readable-stream/transform');
+var encode = require('ent').encode;
 
 module.exports = function (html, cb) {
-    return through(function (line) {
+    var tf = new Transform({ objectMode: true });
+    tf._transform = function (line, _, next) {
         var row;
         if (typeof line === 'string' || Buffer.isBuffer(line)) {
             try { row = JSON.parse(line) }
@@ -10,8 +13,54 @@ module.exports = function (html, cb) {
         }
         else row = line;
         var res = cb(row);
-        if (res) this.queue(encode(hyperglue(html, res).outerHTML));
-    });
+        if (!res) return next();
+        
+        var tr = trumpet();
+        tr.on('data', function (buf) { tf.push(buf) });
+        tr.on('end', function () { next() });
+        
+        Object.keys(res).forEach(function (key) {
+            var elem = tr.select(key);
+            
+            if (isStream(res[key])) {
+                res[key].pipe(elem.createWriteStream());
+            }
+            else if (typeof res[key] === 'object') {
+                Object.keys(res[key]).forEach(function (k) {
+                    var v = res[key][v];
+                    if (k === '_html') {
+                        if (isStream(v)) {
+                            v.pipe(elem.createWriteStream());
+                        }
+                        else if (typeof v === 'string' || Buffer.isBuffer(v)) {
+                            elem.createWriteStream().end(v);
+                        }
+                        else {
+                            elem.createWriteStream().end(String(v));
+                        }
+                    }
+                    else if (k === '_text') {
+                        if (Buffer.isBuffer(v)) v = v.toString('utf8')
+                        else if (typeof v !== 'string') v = String(v);
+                        elem.createWriteStream().end(encode(v));
+                    }
+                    else {
+                        if (Buffer.isBuffer(v)) v = v.toString('utf8')
+                        else if (typeof v !== 'string') v = String(v);
+                        elem.setAttribute(k, v);
+                    }
+                });
+            }
+            else {
+                var v = res[key];
+                if (Buffer.isBuffer(v)) v = v.toString('utf8')
+                else if (typeof v !== 'string') v = String(v);
+                elem.createWriteStream().end(encode(v));
+            }
+        });
+        tr.end(html);
+    };
+    return tf;
 };
 
 function encode (s) {
@@ -24,4 +73,8 @@ function encode (s) {
         else res += s.charAt(i);
     }
     return res;
+}
+
+function isStream (x) {
+    return x && typeof x.pipe === 'function';
 }
