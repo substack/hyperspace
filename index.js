@@ -22,6 +22,7 @@ module.exports = function (html, cb) {
             var elem = tr.select(key);
             
             if (isStream(res[key])) {
+                tf.emit('stream', res[key]);
                 res[key].pipe(elem.createWriteStream());
             }
             else if (typeof res[key] === 'object') {

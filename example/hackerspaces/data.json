@@ -1,7 +1,0 @@
-[
-  {"key":"sudoroom","value":{"type":"hackerspace","name":"sudoroom"}},
-  {"key":"noisebridge","value":{"type":"hackerspace","name":"noisebridge"}},
-  {"key":"substack","value":{"type":"hacker","name":"substack","hackerspace":"sudoroom"}},
-  {"key":"mitch","value":{"type":"hacker","name":"mitch","hackerspace":"noisebridge"}},
-  {"key":"mk30","value":{"type":"hacker","name":"mk30","hackerspace":"sudoroom"}}
-]
