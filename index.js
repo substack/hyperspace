@@ -1,4 +1,3 @@
-var hyperglue = require('hyperglue');
 var trumpet = require('trumpet');
 var Transform = require('readable-stream/transform');
 var encode = require('ent').encode;

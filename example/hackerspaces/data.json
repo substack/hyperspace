@@ -2,18 +2,6 @@
   {"key":"sudoroom","value":{"type":"hackerspace","name":"sudoroom"}},
   {"key":"noisebridge","value":{"type":"hackerspace","name":"noisebridge"}},
   {"key":"substack","value":{"type":"hacker","name":"substack","hackerspace":"sudoroom"}},
-  {"key":"maxogden","value":{"type":"hacker","name":"maxogden","hackerspace":"sudoroom"}},
-  {"key":"ioerror","value":{"type":"hacker","name":"ioerror","hackerspace":"noisebridge"}},
   {"key":"mitch","value":{"type":"hacker","name":"mitch","hackerspace":"noisebridge"}},
-  {"key":"wrought","value":{"type":"hacker","name":"wrought","hackerspace":"sudoroom"}},
-  {"key":"mk30","value":{"type":"hacker","name":"mk30","hackerspace":"sudoroom"}},
-  {"key":"8d9a83","value":{"type":"tool","name":"3d printer","hackerspace":"sudoroom"}},
-  {"key":"ea7e66","value":{"type":"tool","name":"piano","hackerspace":"sudoroom"}},
-  {"key":"025452","value":{"type":"tool","name":"laser cutter","hackerspace":"noisebridge"}},
-  {"key":"yardena","value":{"type":"hacker","name":"yardena","hackerspace":"sudoroom"}},
-  {"key":"5cc709","value":{"type":"tool","name":"3d printer","hackerspace":"noisebridge"}},
-  {"key":"d06ab1","value":{"type":"usage","tool":"8d9a83","minutes":"45","user":"maxogden"}},
-  {"key":"2454c1","value":{"type":"usage","tool":"8d9a83","minutes":"20","user":"yardena"}},
-  {"key":"ec08ed","value":{"type":"usage","tool":"ea7e66","minutes":"14","user":"substack"}},
-  {"key":"61baab","value":{"type":"usage","tool":"025452","minutes":"8","user":"mitch"}}
+  {"key":"mk30","value":{"type":"hacker","name":"mk30","hackerspace":"sudoroom"}}
 ]
