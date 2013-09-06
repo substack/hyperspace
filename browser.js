@@ -19,11 +19,34 @@ module.exports = function (html, cb) {
         else row = line;
         
         var res = cb.call(this, row);
-        if (res) {
-            var elem = hyperglue(html, res);
-            this.emit('element', elem);
-            this.queue(elem.outerHTML);
-        }
+        if (!res) return;
+        var keys = objectKeys(res);
+        var streams = [];
+        
+        for (var i = 0; i < keys.length; i++) (function (key) {
+            var x = res[key];
+            if (!isStream(x)) return;
+            delete res[key];
+            streams.push([key, x ]);
+            tr.emit('stream', x);
+        })(keys[i]);
+        
+        var elem = hyperglue(html, res);
+        
+        for (var i = 0; i < streams.length; i++) (function (stream) {
+            var cur = elem.querySelector(key);
+            if (!cur) return;
+            
+            stream.on('element', function (elem) {
+                cur.appendChild(elem);
+                stream.removeListener('data', ondata);
+            });
+            stream.on('data', ondata);
+            function ondata (e) { cur.innerHTML += e }
+        })(streams[i]);
+        
+        this.emit('element', elem);
+        this.queue(elem.outerHTML);
     });
     
     tr.prependTo = function (t) {
@@ -113,3 +136,13 @@ function isInt8Array (line) {
         && line.constructor.name === 'Int8Array'
     ;
 }
+
+function isStream (x) {
+    return x && typeof x.pipe === 'function';
+}
+
+var objectKeys = Object.keys || function (obj) {
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    return keys;
+};
