@@ -19,15 +19,23 @@ module.exports = function (html, cb) {
         tr.on('end', function () { next() });
         
         Object.keys(res).forEach(function (key) {
-            var elem = tr.select(key);
-            
+            if (key === ':first') {
+                each(key, tr.select('*'));
+            }
+            else if (/:first$/.test(key)) {
+                each(key, tr.select(key.replace(/:first$/, '')));
+            }
+            else tr.selectAll(key, function (elem) { each(key, elem) })
+        });
+        
+        function each (key, elem) {
             if (isStream(res[key])) {
                 tf.emit('stream', res[key]);
                 res[key].pipe(elem.createWriteStream());
             }
             else if (typeof res[key] === 'object') {
                 Object.keys(res[key]).forEach(function (k) {
-                    var v = res[key][v];
+                    var v = res[key][k];
                     if (k === '_html') {
                         if (isStream(v)) {
                             v.pipe(elem.createWriteStream());
@@ -57,7 +65,7 @@ module.exports = function (html, cb) {
                 else if (typeof v !== 'string') v = String(v);
                 elem.createWriteStream().end(encode(v));
             }
-        });
+        }
         tr.end(html);
     };
     return tf;
