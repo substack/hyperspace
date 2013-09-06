@@ -102,7 +102,7 @@ module.exports = function (html, cb) {
         if (emittedElements) return target;
         emittedElements = true;
         
-        var elems = target.getElementsByClassName(className);
+        var elems = target.querySelectorAll('.' + className);
         for (var i = 0; i < elems.length; i++) {
             tr.emit('element', elems[i]);
         }
