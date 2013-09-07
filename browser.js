@@ -28,19 +28,16 @@ module.exports = function (html, cb) {
             if (isStream(x)) {
                 delete res[key];
                 streams.push([ key, x ]);
-                tr.emit('stream', x);
             }
             else if (x && typeof x === 'object' && isStream(x._html)) {
                 var st = x._html;
                 delete x._html;
                 streams.push([ key, st ]);
-                tr.emit('stream', st);
             }
             else if (x && typeof x === 'object' && isStream(x._text)) {
                 var st = x._text;
                 delete x._text;
                 streams.push([ key, st ]);
-                tr.emit('stream', st);
             }
         })(keys[i]);
         
@@ -48,6 +45,7 @@ module.exports = function (html, cb) {
         
         for (var i = 0; i < streams.length; i++) (function (ks) {
             var key = ks[0], stream = ks[1];
+            tr.emit('stream', stream, elem);
             var cur = elem.querySelector(key);
             if (!cur) return;
             
