@@ -25,15 +25,29 @@ module.exports = function (html, cb) {
         
         for (var i = 0; i < keys.length; i++) (function (key) {
             var x = res[key];
-            if (!isStream(x)) return;
-            delete res[key];
-            streams.push([key, x ]);
-            tr.emit('stream', x);
+            if (isStream(x)) {
+                delete res[key];
+                streams.push([ key, x ]);
+                tr.emit('stream', x);
+            }
+            else if (x && typeof x === 'object' && isStream(x._html)) {
+                var st = x._html;
+                delete x._html;
+                streams.push([ key, st ]);
+                tr.emit('stream', st);
+            }
+            else if (x && typeof x === 'object' && isStream(x._text)) {
+                var st = x._text;
+                delete x._text;
+                streams.push([ key, st ]);
+                tr.emit('stream', st);
+            }
         })(keys[i]);
         
         var elem = hyperglue(html, res);
         
-        for (var i = 0; i < streams.length; i++) (function (stream) {
+        for (var i = 0; i < streams.length; i++) (function (ks) {
+            var key = ks[0], stream = ks[1];
             var cur = elem.querySelector(key);
             if (!cur) return;
             
