@@ -105,6 +105,7 @@ module.exports = function (html, cb) {
     };
     
     var emittedElements = false;
+    tr.className = className;
     return tr;
     
     function getTarget (t, target) {
