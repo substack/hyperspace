@@ -1,6 +1,8 @@
 var trumpet = require('trumpet');
 var Transform = require('readable-stream/transform');
+var hyperglue = require('hyperglue');
 var encode = require('ent').encode;
+var through = require('through');
 
 module.exports = function (html, cb) {
     var tf = new Transform({ objectMode: true });
@@ -32,6 +34,22 @@ module.exports = function (html, cb) {
             if (isStream(res[key])) {
                 tf.emit('stream', res[key]);
                 res[key].pipe(elem.createWriteStream());
+            }
+            else if (Array.isArray(res[key])) {
+                var bufs = [];
+                var write = function (buf) { bufs.push(buf) };
+                var end = function (next) {
+                    var html = Buffer.concat(bufs).toString('utf8');
+                    if (html.length) {
+                        res[key].forEach(function (m) {
+                            var mm = {}; mm[key] = m;
+                            trf.queue(hyperglue(html, mm).outerHTML);
+                        });
+                    }
+                    trf.queue(null);
+                };
+                var trf = through(write, end);
+                trf.pipe(elem.createStream({ outer: true })).pipe(trf);
             }
             else if (typeof res[key] === 'object') {
                 Object.keys(res[key]).forEach(function (k) {
