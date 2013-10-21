@@ -343,6 +343,18 @@ object of [hyperglue](https://github.com/substack/hyperglue) css selectors
 mapped to content and attributes or a falsy value if nothing should be rendered
 for the given `row`.
 
+The `html` string must have a class defined in the top-level element so that
+hyperspace can pick up on which elements were rendered server-side. For
+example, in this `html` snippet `kv-row` is necessary, although any class name
+will work:
+
+```
+<div class="kv-row">
+  <span class="key"></span>: 
+  <span class="value"></span>
+</div>
+```
+
 # browser methods
 
 These methods only apply browser-side because they deal with how to handle the
