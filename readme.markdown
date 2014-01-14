@@ -397,6 +397,15 @@ element `a` and `b` to be sorted.
 
 `target` can be an html element or a css selector.
 
+If `cmp` is `undefined` but an `opts.key` has been set, the `opts.key` top-level
+attribute will be used for the comparison.
+
+If `cmp` is a string, it will be interpreted as a query selector that will
+traverse down to the textContent of an element. If both textContent strings look
+like numbers, a numeric comparison will be used. Otherwise, a string comparison
+is used. You can negate the string match by using a leading `'~'` character in
+the query selector string.
+
 # browser events
 
 ## render.on('element', function (elem) {})

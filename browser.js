@@ -241,5 +241,5 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 function isNum (s) {
-    return /^(\d*\.\d+|\d+\.)(e-?\d+)?$/.test(s);
+    return /^\s*(\d*\.\d+|\d+\.)(e-?\d+)?\s*$/.test(s);
 }
