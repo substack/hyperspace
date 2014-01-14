@@ -103,9 +103,24 @@ module.exports = function (html, opts, cb) {
         }
         var target = getElem(t);
         
-        tr.on('element', function (elem) {
+        var nodes = [].slice.call(target.getElementsByClassName(className));
+        var sorted = nodes.slice().sort(cmp);
+        for (var i = 0; i < nodes.length; i++) {
+            if (target.childNodes[i] === sorted[i]) continue;
+            target.removeChild(sorted[i]);
+            target.insertBefore(sorted[i], target.childNodes[i]);
+        }
+        
+        tr.on('element', onupdate);
+        tr.on('update', onupdate);
+        
+        getTarget(t, target);
+        return tr;
+        
+        function onupdate (elem) {
             var nodes = target.getElementsByClassName(className);
             for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i] === elem) continue;
                 var n = cmp(elem, nodes[i]);
                 if (n < 0) {
                     if (hasChild(target, elem)) {
@@ -116,10 +131,7 @@ module.exports = function (html, opts, cb) {
                 }
             }
             target.appendChild(elem);
-        });
-        
-        getTarget(t, target);
-        return tr;
+        }
     };
     
     var emittedElements = false;
