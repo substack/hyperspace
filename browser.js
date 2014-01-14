@@ -112,6 +112,13 @@ module.exports = function (html, opts, cb) {
     };
     
     tr.sortTo = function (t, cmp) {
+        if (opts.key && cmp === undefined) {
+            cmp = function (a, b) {
+                var ka = a.getAttribute(opts.key);
+                var kb = b.getAttribute(opts.key);
+                return ka < kb ? -1 : 1;
+            };
+        }
         if (typeof cmp !== 'function') {
             throw new Error('comparison function not provided');
         }
