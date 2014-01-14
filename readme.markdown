@@ -64,7 +64,7 @@ row.html:
 
 It's easy to pipe some data the renderer in stdout
 
-```
+``` js
 var r = require('./render')();
 r.pipe(process.stdout);
 r.write(JSON.stringify({ who: 'substack', message: 'beep boop' }) + '\n');
@@ -73,7 +73,7 @@ r.write(JSON.stringify({ who: 'h4ckr', message: 'h4x' }) + '\n');
 
 which prints:
 
-```
+``` html
 <div class="row">
   <div class="who">substack</div>
   <div class="message">beep boop</div>
@@ -161,27 +161,27 @@ index.html
 Now just compile with [browserify](http://browserify.org) and
 [brfs](http://github.com/substack/brfs):
 
-```
+``` bash
 $ browserify -t brfs browser.js > static/bundle.js
 ```
 
 Now we can populate `data.txt` with some silly data:
 
-```
+``` bash
 $ echo '{"who":"substack","message":"beep boop."}' >> data.txt
 $ echo '{"who":"zoltar","message":"COWER PUNY HUMANS"}' >> data.txt
 ```
 
 then spin up the server:
 
-```
+``` bash
 $ node server.js
 ```
 
 then navigate to `localhost:8000` where we will see our content. If we add some
 more content:
 
-```
+``` bash
 $ echo '{"who":"substack","message":"oh hello."}' >> data.txt
 $ echo '{"who":"zoltar","message":"HEAR ME!"}' >> data.txt
 ```
@@ -348,7 +348,7 @@ hyperspace can pick up on which elements were rendered server-side. For
 example, in this `html` snippet `row` is necessary, although any class name
 will work:
 
-```
+``` html
 <div class="row">
   <span class="key"></span>: 
   <span class="value"></span>
@@ -419,8 +419,8 @@ or `.sortTo()` is called.
 
 With [npm](https://npmjs.org) do:
 
-```
-npm install hyperspace
+``` bash
+$ npm install hyperspace
 ```
 
 # license
