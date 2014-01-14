@@ -119,6 +119,24 @@ module.exports = function (html, opts, cb) {
                 return ka < kb ? -1 : 1;
             };
         }
+        else if (typeof cmp === 'string') {
+            cmp = (function (str) {
+                var flip = /^~/.test(str);
+                if (flip) str = str.replace(/^~/, '');
+                var n = flip ? 1 : -1;
+                
+                return function (a, b) {
+                    var qa = a.querySelector(str);
+                    var xa = qa && qa.textContent || qa.innerText;
+                    var qb = b.querySelector(str);
+                    var xb = qb && qb.textContent || qb.innerText;
+                    if (isNum(xa) && isNum(xb)) {
+                        return Number(xa) < Number(xb) ? -n : n;
+                    }
+                    else return xa < xb ? -n : n;
+                };
+            })(cmp);
+        }
         if (typeof cmp !== 'function') {
             throw new Error('comparison function not provided');
         }
@@ -221,3 +239,7 @@ var objectKeys = Object.keys || function (obj) {
     for (var key in obj) keys.push(key);
     return keys;
 };
+
+function isNum (s) {
+    return /^(\d*\.\d+|\d+\.)(e-?\d+)?$/.test(s);
+}
