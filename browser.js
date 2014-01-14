@@ -25,6 +25,10 @@ module.exports = function (html, opts, cb) {
         }
         else row = line;
         
+        if (opts.key && row && row.key && row.type === 'del') {
+            return this.emit('delete', elements[row.key]);
+        }
+        
         var res = cb.call(this, row);
         if (!res) return;
         var keys = objectKeys(res);
@@ -85,6 +89,11 @@ module.exports = function (html, opts, cb) {
         tr.on('element', function (elem) {
             target.insertBefore(elem, target.childNodes[0]);
         });
+        
+        tr.on('delete', function (elem) {
+            if (hasChild(target, elem)) target.removeChild(elem);
+        });
+        
         return tr;
     };
     
@@ -94,6 +103,11 @@ module.exports = function (html, opts, cb) {
         tr.on('element', function (elem) {
             target.appendChild(elem);
         });
+        
+        tr.on('delete', function (elem) {
+            if (hasChild(target, elem)) target.removeChild(elem);
+        });
+        
         return tr;
     };
     
@@ -117,6 +131,9 @@ module.exports = function (html, opts, cb) {
                 target.removeChild(elem);
             }
             onupdate(elem);
+        });
+        tr.on('delete', function (elem) {
+            if (hasChild(target, elem)) target.removeChild(elem);
         });
         
         getTarget(t, target);
