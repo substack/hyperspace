@@ -1,6 +1,6 @@
 {
     "name": "hyperspace",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "render streams of html on the client and the server",
     "main": "index.js",
     "browser": "browser.js",
