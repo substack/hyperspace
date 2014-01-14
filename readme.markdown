@@ -410,6 +410,12 @@ called on the same container that the server populated content with.
 When an `opts.key` was configured and a new row comes in with a matching key to
 an existing element, the `'update'` event fires instead of `'element'`.
 
+## render.on('delete', function (elem) {})
+
+If a row comes along with a `row.type` of `"del"` and `opts.key` was set, the
+`row.key` will be used to index the element and the element will be removed from
+the page and the `'delete'` event fires with the element reference.
+
 ## render.on('parent', function (elem) {})
 
 This event fires with the container element when `.appendTo()`, `.prependTo()`,
