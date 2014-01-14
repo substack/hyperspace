@@ -103,16 +103,21 @@ module.exports = function (html, opts, cb) {
         }
         var target = getElem(t);
         
-        var nodes = [].slice.call(target.getElementsByClassName(className));
-        var sorted = nodes.slice().sort(cmp);
-        for (var i = 0; i < nodes.length; i++) {
+        var sorted = [].slice.call(target.getElementsByClassName(className));
+        sorted.sort(cmp);
+        for (var i = 0; i < sorted.length; i++) {
             if (target.childNodes[i] === sorted[i]) continue;
             target.removeChild(sorted[i]);
             target.insertBefore(sorted[i], target.childNodes[i]);
         }
         
         tr.on('element', onupdate);
-        tr.on('update', onupdate);
+        tr.on('update', function (elem) {
+            if (hasChild(target, elem)) {
+                target.removeChild(elem);
+            }
+            onupdate(elem);
+        });
         
         getTarget(t, target);
         return tr;
