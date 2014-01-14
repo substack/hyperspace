@@ -2,7 +2,14 @@ var through = require('through');
 var hyperglue = require('hyperglue');
 var domify = require('domify');
 
-module.exports = function (html, cb) {
+module.exports = function (html, opts, cb) {
+    if (typeof opts === 'function') {
+        cb = opts;
+        opts = {};
+    }
+    if (!opts) opts = {};
+    var elements = {};
+    
     var className = classNameOf(html);
     
     var tr = through(function (line) {
@@ -41,7 +48,18 @@ module.exports = function (html, cb) {
             }
         })(keys[i]);
         
-        var elem = hyperglue(html, res);
+        var type, elem;
+        if (opts.key && row.key && elements[row.key]) {
+            elem = hyperglue(elements[row.key], res);
+            type = 'update';
+        }
+        else {
+            elem = hyperglue(html, res);
+            type = 'element';
+        }
+        if (opts.key && row.key) {
+            elements[row.key] = elem;
+        }
         
         for (var i = 0; i < streams.length; i++) (function (ks) {
             var key = ks[0], stream = ks[1];
@@ -57,7 +75,7 @@ module.exports = function (html, cb) {
             function ondata (e) { cur.innerHTML += e }
         })(streams[i]);
         
-        this.emit('element', elem);
+        this.emit(type, elem);
         this.queue(elem.outerHTML);
     });
     
@@ -117,7 +135,10 @@ module.exports = function (html, cb) {
         
         var elems = target.querySelectorAll('.' + className);
         for (var i = 0; i < elems.length; i++) {
-            tr.emit('element', elems[i]);
+            var elem = elems[i];
+            var key = opts.key && elem.getAttribute(opts.key);
+            if (key) elements[key] = elem;
+            tr.emit('element', elem);
         }
         return target;
     }

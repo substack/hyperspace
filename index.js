@@ -4,7 +4,13 @@ var hyperglue = require('hyperglue');
 var encode = require('ent').encode;
 var through = require('through');
 
-module.exports = function (html, cb) {
+module.exports = function (html, opts, cb) {
+    if (typeof opts === 'function') {
+        cb = opts;
+        opts = {};
+    }
+    if (!opts) opts = {};
+    
     var tf = new Transform({ objectMode: true });
     tf._transform = function (line, _, next) {
         var row;
@@ -17,6 +23,10 @@ module.exports = function (html, cb) {
         if (!res) return next();
         
         var tr = trumpet();
+        if (opts.key && row.key) {
+            tr.select('*').setAttribute(opts.key, row.key);
+        }
+        
         tr.on('data', function (buf) { tf.push(buf) });
         tr.on('end', function () { next() });
         
