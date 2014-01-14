@@ -332,7 +332,7 @@ The complete code for this demo is in `example/more`.
 var hyperspace = require('hyperspace')
 ```
 
-# var render = hyperspace(html, f)
+# var render = hyperspace(html, opts={}, f)
 
 Return a new `render` through stream that takes json strings or objects as input
 and outputs a stream of html strings after applying the transformations from
@@ -345,15 +345,30 @@ for the given `row`.
 
 The `html` string must have a class defined in the top-level element so that
 hyperspace can pick up on which elements were rendered server-side. For
-example, in this `html` snippet `kv-row` is necessary, although any class name
+example, in this `html` snippet `row` is necessary, although any class name
 will work:
 
 ```
-<div class="kv-row">
+<div class="row">
   <span class="key"></span>: 
   <span class="value"></span>
 </div>
 ```
+
+If you pass in an `opts.key`, an attribute will set on each top-level element.
+For example, for an `opts.key` of `"abc"`, this html is generated:
+
+```
+<div data-key="abc" class="row">
+  <span class="key"></span>: 
+  <span class="value"></span>
+</div>
+```
+
+In the browser, when a row comes in with a `row.key` that matches some existing
+`opts.key` attribute, an `'update'` event will fire instead of an `'element`'
+event and the contents of the row dom node will be updated in place instead of
+creating a new element from the `html` string.
 
 # browser methods
 
@@ -389,6 +404,11 @@ element `a` and `b` to be sorted.
 This event fires for all elements created by the result stream, including those
 elements created server-side so long as `.prependTo()` or `.appendTo()` as been
 called on the same container that the server populated content with.
+
+## render.on('update', function (elem) {})
+
+When an `opts.key` was configured and a new row comes in with a matching key to
+an existing element, the `'update'` event fires instead of `'element'`.
 
 ## render.on('parent', function (elem) {})
 
