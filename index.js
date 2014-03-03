@@ -24,7 +24,8 @@ module.exports = function (html, opts, cb) {
         
         var tr = trumpet();
         if (opts.key && row.key) {
-            tr.select('*').setAttribute(opts.key, row.key);
+            var rk = typeof row.key === 'string' ? row.key : String(row.key);
+            tr.select('*').setAttribute(opts.key, rk);
         }
         
         tr.on('data', function (buf) { tf.push(buf) });
