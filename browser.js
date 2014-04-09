@@ -8,6 +8,12 @@ module.exports = function (html, opts, cb) {
         opts = {};
     }
     if (!opts) opts = {};
+    var keyOf = function (row) {
+        if (!opts.key) return undefined;
+        else if (opts.key === true) return true;
+        else if (typeof opts.key === 'function') return opts.key(row);
+        else return opts.key;
+    };
     var elements = {};
     
     var className = classNameOf(html);
@@ -25,8 +31,11 @@ module.exports = function (html, opts, cb) {
         }
         else row = line;
         
-        if (opts.key && row && row.key && row.type === 'del') {
-            return this.emit('delete', elements[row.key]);
+        if (opts.key && row && row.type === 'del') {
+            var k = keyOf(row);
+            if (k !== undefined && elements[k]) {
+                return this.emit('delete', elements[k]);
+            }
         }
         
         var res = cb.call(this, row);
@@ -53,16 +62,19 @@ module.exports = function (html, opts, cb) {
         })(keys[i]);
         
         var type, elem;
-        if (opts.key && row.key && elements[row.key]) {
-            elem = hyperglue(elements[row.key], res);
+        var k = keyOf(row);
+        
+        if (opts.key && k !== undefined && elements[k]) {
+            elem = hyperglue(elements[k], res);
             type = 'update';
         }
         else {
             elem = hyperglue(html, res);
             type = 'element';
         }
-        if (opts.key && row.key) {
-            elements[row.key] = elem;
+        if (opts.key) {
+            var k = keyOf(row);
+            if (k !== undefined) elements[k] = elem;
         }
         
         for (var i = 0; i < streams.length; i++) (function (ks) {
