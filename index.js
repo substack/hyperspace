@@ -15,6 +15,7 @@ module.exports = function (html, opts, cb) {
     tf._transform = function (line, _, next) {
         var row;
         if (typeof line === 'string' || Buffer.isBuffer(line)) {
+            if (line === '') return next();
             try { row = JSON.parse(line) }
             catch (err) { this.emit('error', err) }
         }
