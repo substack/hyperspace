@@ -370,6 +370,9 @@ In the browser, when a row comes in with a `row.key` that matches some existing
 event and the contents of the row dom node will be updated in place instead of
 creating a new element from the `html` string.
 
+If you don't want to use `row.key`, you can use a custom key name controlled by
+`opts.keyName`.
+
 # browser methods
 
 These methods only apply browser-side because they deal with how to handle the
