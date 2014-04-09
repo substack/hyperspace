@@ -10,6 +10,7 @@ module.exports = function (html, opts, cb) {
         opts = {};
     }
     if (!opts) opts = {};
+    var keyName = opts.keyName || 'key';
     
     var tf = new Transform({ objectMode: true });
     tf._transform = function (line, _, next) {
@@ -24,8 +25,11 @@ module.exports = function (html, opts, cb) {
         if (!res) return next();
         
         var tr = trumpet();
-        if (opts.key && row.key) {
-            var rk = typeof row.key === 'string' ? row.key : String(row.key);
+        if (opts.key && row[keyName]) {
+            var rk = typeof row[keyName] === 'string'
+                ? row[keyName]
+                : String(row[keyName])
+            ;
             tr.select('*').setAttribute(opts.key, rk);
         }
         
