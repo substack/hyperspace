@@ -373,6 +373,11 @@ creating a new element from the `html` string.
 If you don't want to use `row.key`, you can use a custom key name controlled by
 `opts.keyName`.
 
+Additionally, you can pass in a custom key resolver function as `opts.key(row)`
+that should return the key name. If you pass in `true` for `opts.key`, each row
+will resolve to the same element for updates. This is useful for aggregate
+elements that sum up a stream of rows in-place.
+
 # browser methods
 
 These methods only apply browser-side because they deal with how to handle the
