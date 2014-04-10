@@ -27,7 +27,7 @@ test('opts.key', function (t) {
     r.pipe(concat(function (body) {
         t.equal(
             body.toString(),
-            '<div>total: <span class="size">XXX M</span></div>'
+            '<div>total: <span class="size">13.37 M</span></div>'
         );
     }));
     

@@ -106,18 +106,6 @@ module.exports = function (html, opts, cb) {
     return tf;
 };
 
-function encode (s) {
-    var res = '';
-    for (var i = 0; i < s.length; i++) {
-        var c = s.charCodeAt(i);
-        if (c >= 128) {
-            res += '&#' + c + ';';
-        }
-        else res += s.charAt(i);
-    }
-    return res;
-}
-
 function isStream (x) {
     return x && typeof x.pipe === 'function';
 }
