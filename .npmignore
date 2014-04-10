@@ -1,2 +1,4 @@
+.gitignore
 example/*/static/bundle.js
 example/*/data.txt
+example/*/.gitignore
