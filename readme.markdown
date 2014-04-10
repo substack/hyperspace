@@ -2,6 +2,10 @@
 
 render streams of html on the client and the server
 
+[![build status](https://secure.travis-ci.org/substack/hyperspace.png)](http://travis-ci.org/substack/hyperspace)
+
+[![testling badge](https://ci.testling.com/substack/hyperspace.png)](https://ci.testling.com/substack/hyperspace)
+
 Use the same rendering logic in the browser and the server to build
 SEO-friendly pages with indexable realtime updates.
 
