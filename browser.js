@@ -29,7 +29,7 @@ module.exports = function (html, opts, cb) {
         
         if (opts.key && row && row.type === 'del') {
             var k = keyOf(row);
-            if (k !== undefined && elements[k]) {
+            if (k && elements[k]) {
                 return this.emit('delete', elements[k]);
             }
         }
@@ -60,7 +60,7 @@ module.exports = function (html, opts, cb) {
         var type, elem;
         var k = keyOf(row);
         
-        if (opts.key && k !== undefined && elements[k]) {
+        if (k && elements[k]) {
             elem = hyperglue(elements[k], res);
             type = 'update';
         }

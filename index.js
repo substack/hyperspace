@@ -35,6 +35,7 @@ module.exports = function hyperspace (html, opts, cb) {
         
         if (typeof line === 'string' || Buffer.isBuffer(line)) {
             if (line.length === 0) return next();
+            if (typeof line !== 'string') line = String(line);
             try { row = JSON.parse(line) }
             catch (err) { this.emit('error', err) }
         }
@@ -43,7 +44,7 @@ module.exports = function hyperspace (html, opts, cb) {
         if (!res) return next();
         
         var tr = trumpet();
-        var k = keyOf(row);
+        var k = keyOf && keyOf(row);
         if (typeof opts.key === 'string') {
             var rk = typeof k === 'string' ? k : String(k);
             tr.select('*').setAttribute(opts.key, rk);
@@ -61,7 +62,7 @@ module.exports = function hyperspace (html, opts, cb) {
             }
         }
         else {
-            tr.pipe(tf, { end: false });
+            tr.pipe(through(function (buf) { tf.push(buf) }));
         }
         tr.on('end', function () { next() });
         
