@@ -4,17 +4,38 @@ var hyperglue = require('hyperglue');
 var encode = require('ent').encode;
 var through = require('through');
 
-module.exports = function (html, opts, cb) {
+var nextTick = typeof setImmediate !== 'undefined'
+    ? setImmediate : process.nextTick
+;
+
+module.exports = function hyperspace (html, opts, cb) {
     if (typeof opts === 'function') {
         cb = opts;
         opts = {};
     }
     if (!opts) opts = {};
-    var keyName = opts.keyName || 'key';
+    var keyOf = function (row) {
+        if (!opts.key) return undefined;
+        else if (opts.key === true) return true;
+        else if (typeof opts.key === 'function') return opts.key(row);
+        else return opts.key;
+    };
+    var buffering = false;
+    if (opts.buffer || (opts.key && typeof opts.key !== 'string')) {
+        buffering = {};
+    }
     
     var tf = new Transform({ objectMode: true });
+    tf._flush = function (next) {
+        setImmediate(function () {
+            tf.push(null);
+            next();
+        });
+    };
+    
     tf._transform = function (line, _, next) {
         var row;
+        
         if (typeof line === 'string' || Buffer.isBuffer(line)) {
             if (line.length === 0) return next();
             try { row = JSON.parse(line) }
@@ -25,16 +46,29 @@ module.exports = function (html, opts, cb) {
         if (!res) return next();
         
         var tr = trumpet();
-        var kname = typeof opts.key === 'function' ? opts.key(row) : keyName;
-        if (typeof kname === 'string' && row[kname]) {
+        var k = keyOf(row);
+        if (typeof k === 'string' && row[k]) {
             var rk = typeof row[keyName] === 'string'
                 ? row[keyName]
                 : String(row[keyName])
             ;
-            tr.select('*').setAttribute(kname, rk);
+            tr.select('*').setAttribute(k, rk);
         }
         
-        tr.on('data', function (buf) { tf.push(buf) });
+        if (buffering && k) {
+            var first = !buffering[k];
+            buffering[k] = [];
+            tr.on('data', function (buf) { buffering[k].push(buf) });
+            if (first) {
+                tf.on('finish', function () {
+                    tf.push(Buffer.concat(buffering[k]));
+                    delete buffering[k];
+                });
+            }
+        }
+        else {
+            tr.pipe(tf, { end: false });
+        }
         tr.on('end', function () { next() });
         
         Object.keys(res).forEach(function (key) {
