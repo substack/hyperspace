@@ -14,7 +14,8 @@ module.exports = function (html, opts, cb) {
     
     var className = classNameOf(html);
     
-    var tr = through(function (line) {
+    var tr = through(write, end);
+    function write (line) {
         var row;
         if (isInt8Array(line)) {
             var s = '';
@@ -85,8 +86,16 @@ module.exports = function (html, opts, cb) {
         })(streams[i]);
         
         this.emit(type, elem);
-        this.queue(elem.outerHTML);
-    });
+        
+        if (opts.key !== true) this.queue(elem.outerHTML);
+    }
+    
+    function end () {
+        if (opts.key === true) {
+            this.queue(elements[true].outerHTML);
+        }
+        this.queue(null);
+    }
     
     tr.prependTo = function (t) {
         var target = getTarget(t);
