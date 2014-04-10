@@ -25,12 +25,13 @@ module.exports = function (html, opts, cb) {
         if (!res) return next();
         
         var tr = trumpet();
-        if (opts.key && row[keyName]) {
+        var kname = typeof opts.key === 'function' ? opts.key(row) : keyName;
+        if (typeof kname === 'string' && row[kname]) {
             var rk = typeof row[keyName] === 'string'
                 ? row[keyName]
                 : String(row[keyName])
             ;
-            tr.select('*').setAttribute(opts.key, rk);
+            tr.select('*').setAttribute(kname, rk);
         }
         
         tr.on('data', function (buf) { tf.push(buf) });
