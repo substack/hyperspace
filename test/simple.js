@@ -18,7 +18,7 @@ test('simple', function (t) {
         };
     });
     hs.pipe(concat(function (body) {
-        t.equal(body.toString('utf8'), [
+        t.equal(fix(body.toString('utf8')), [
             '<div class="row">'
             + '<div class="who">robot</div>'
             + '<div class="message">beep boop</div>'
@@ -39,3 +39,7 @@ test('simple', function (t) {
     hs.write({ who: 'mouse', message: '<squeak>' });
     hs.end();
 });
+
+function fix (s) {
+    return s.replace(/&lt;/g, '&#60;').replace(/&gt;/, '&#62;');
+}
