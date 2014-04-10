@@ -1,6 +1,7 @@
 var through = require('through');
 var hyperglue = require('hyperglue');
 var domify = require('domify');
+var KeyOf = require('./lib/key_of.js');
 
 module.exports = function (html, opts, cb) {
     if (typeof opts === 'function') {
@@ -8,12 +9,7 @@ module.exports = function (html, opts, cb) {
         opts = {};
     }
     if (!opts) opts = {};
-    var keyOf = function (row) {
-        if (!opts.key) return undefined;
-        else if (opts.key === true) return true;
-        else if (typeof opts.key === 'function') return opts.key(row);
-        else return opts.key;
-    };
+    var keyOf = KeyOf(opts.key);
     var elements = {};
     
     var className = classNameOf(html);
@@ -72,10 +68,7 @@ module.exports = function (html, opts, cb) {
             elem = hyperglue(html, res);
             type = 'element';
         }
-        if (opts.key) {
-            var k = keyOf(row);
-            if (k !== undefined) elements[k] = elem;
-        }
+        if (k) elements[k] = elem;
         
         for (var i = 0; i < streams.length; i++) (function (ks) {
             var key = ks[0], stream = ks[1];

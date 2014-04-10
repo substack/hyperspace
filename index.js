@@ -3,6 +3,7 @@ var Transform = require('readable-stream/transform');
 var hyperglue = require('hyperglue');
 var encode = require('ent').encode;
 var through = require('through');
+var KeyOf = require('./lib/key_of.js');
 
 var nextTick = typeof setImmediate !== 'undefined'
     ? setImmediate : process.nextTick
@@ -14,12 +15,8 @@ module.exports = function hyperspace (html, opts, cb) {
         opts = {};
     }
     if (!opts) opts = {};
-    var keyOf = function (row) {
-        if (!opts.key) return undefined;
-        else if (opts.key === true) return true;
-        else if (typeof opts.key === 'function') return opts.key(row);
-        else return opts.key;
-    };
+    var keyOf = KeyOf(opts.key);
+    
     var buffering = false;
     if (opts.buffer || (opts.key && typeof opts.key !== 'string')) {
         buffering = {};
@@ -27,7 +24,7 @@ module.exports = function hyperspace (html, opts, cb) {
     
     var tf = new Transform({ objectMode: true });
     tf._flush = function (next) {
-        setImmediate(function () {
+        nextTick(function () {
             tf.push(null);
             next();
         });
@@ -47,12 +44,9 @@ module.exports = function hyperspace (html, opts, cb) {
         
         var tr = trumpet();
         var k = keyOf(row);
-        if (typeof k === 'string' && row[k]) {
-            var rk = typeof row[keyName] === 'string'
-                ? row[keyName]
-                : String(row[keyName])
-            ;
-            tr.select('*').setAttribute(k, rk);
+        if (typeof opts.key === 'string') {
+            var rk = typeof k === 'string' ? k : String(k);
+            tr.select('*').setAttribute(opts.key, rk);
         }
         
         if (buffering && k) {
