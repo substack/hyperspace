@@ -58,7 +58,7 @@ module.exports = function (html, opts, cb) {
         })(keys[i]);
         
         var type, elem;
-        var k = keyOf(row);
+        var k = opts.key && keyOf(row);
         
         if (k && elements[k]) {
             elem = hyperglue(elements[k], res);
