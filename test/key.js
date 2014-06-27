@@ -50,10 +50,10 @@ test('typeof opts.key === "string"', function (t) {
     r.pipe(concat(function (body) {
         t.equal(
             body.toString(),
-            data.map(function (size) {
-                return '<div size="' + size + '"> size: '
-                    + '<span class="size">' + size + '</span></div>';
-            })
+            data.map(function (d) {
+                return '<div size="' + d.size + '"> size: '
+                    + '<span class="size">' + d.size + '</span></div>';
+            }).join('')
         );
     }));
     
