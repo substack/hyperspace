@@ -7,10 +7,10 @@
   "dependencies": {
     "domify": "~0.2.0",
     "ent": "~2.0.0",
-    "hyperglue": "~1.3.0",
-    "readable-stream": "~1.0.15",
+    "hyperglue": "^1.3.0",
+    "readable-stream": "^1.0.27-1",
     "through": "~2.3.4",
-    "trumpet": "~1.6.1"
+    "trumpet": "^1.6.4"
   },
   "devDependencies": {
     "concat-stream": "^1.4.4",
