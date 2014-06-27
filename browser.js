@@ -207,7 +207,7 @@ module.exports = function (html, opts, cb) {
         emittedElements = true;
         var elems = target.querySelectorAll('.' + className);
         
-        setTimeout(function(){
+        process.nextTick(function(){
             for (var i = 0; i < elems.length; i++) {
                 var elem = elems[i];
                 var key = opts.key && elem.getAttribute(opts.key);
