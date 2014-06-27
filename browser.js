@@ -205,14 +205,17 @@ module.exports = function (html, opts, cb) {
         if (!className) return target;
         if (emittedElements) return target;
         emittedElements = true;
-        
         var elems = target.querySelectorAll('.' + className);
-        for (var i = 0; i < elems.length; i++) {
-            var elem = elems[i];
-            var key = opts.key && elem.getAttribute(opts.key);
-            if (key) elements[key] = elem;
-            tr.emit('element', elem);
-        }
+        
+        setTimeout(function(){
+            for (var i = 0; i < elems.length; i++) {
+                var elem = elems[i];
+                var key = opts.key && elem.getAttribute(opts.key);
+                if (key) elements[key] = elem;
+                tr.emit('element', elem);
+            }
+        });
+
         return target;
     }
 };
