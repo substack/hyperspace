@@ -51,7 +51,7 @@ test('typeof opts.key === "string"', function (t) {
         t.equal(
             body.toString(),
             data.map(function (d) {
-                return '<div size="' + d.size + '"> size: '
+                return '<div size="' + d.size + '">size: '
                     + '<span class="size">' + d.size + '</span></div>';
             }).join('')
         );
