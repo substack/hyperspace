@@ -2,6 +2,7 @@ var through = require('through');
 var hyperglue = require('hyperglue');
 var domify = require('domify');
 var KeyOf = require('./lib/key_of.js');
+var json = require('jsonify');
 
 module.exports = function (html, opts, cb) {
     if (typeof opts === 'function') {
@@ -26,7 +27,7 @@ module.exports = function (html, opts, cb) {
             line = s;
         }
         if (typeof line === 'string') {
-            try { row = JSON.parse(line) }
+            try { row = json.parse(line) }
             catch (err) { this.emit('error', err) }
         }
         else row = line;

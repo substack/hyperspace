@@ -10,7 +10,8 @@
     "hyperglue": "^1.3.0",
     "readable-stream": "^1.0.27-1",
     "through": "~2.3.4",
-    "trumpet": "^1.6.4"
+    "trumpet": "^1.6.4",
+    "jsonify": "~0.0.0"
   },
   "devDependencies": {
     "concat-stream": "^1.4.4",
@@ -41,7 +42,10 @@
   },
   "license": "MIT",
   "testling": {
-    "files": [ "test/*.js", "test/browser/*.js" ],
+    "files": [
+      "test/*.js",
+      "test/browser/*.js"
+    ],
     "browsers": [
       "ie/8..latest",
       "firefox/15",
