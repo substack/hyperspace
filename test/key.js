@@ -41,7 +41,7 @@ test('typeof opts.key === "string"', function (t) {
 
     var html = '<div>size: <span class="size"></span></div>';
     function render () {
-        return hyperspace(html, { key: 'size' }, function (row) {
+        return hyperspace(html, { keyName: 'size', key: 'size' }, function (row) {
             return { '.size': row.size };
         });
     }

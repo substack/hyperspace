@@ -47,7 +47,7 @@ module.exports = function hyperspace (html, opts, cb) {
         var k = keyOf && keyOf(row);
         if (typeof opts.key === 'string') {
             var rk = typeof k === 'string' ? k : String(k);
-            tr.select('*').setAttribute(opts.key, rk);
+            tr.select('*').setAttribute(opts.keyName || 'data-key', rk);
         }
         
         if (buffering && k) {
