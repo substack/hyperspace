@@ -17,7 +17,10 @@ module.exports = function (html, opts, cb) {
     var tr = through(write, end);
     function write (line) {
         var row;
-        if (isInt8Array(line)) {
+        if (Buffer.isBuffer(line)) {
+            line = line.toString('utf8');
+        }
+        else if (isInt8Array(line)) {
             var s = '';
             for (var i = 0; i < line.length; i++) s += line[i];
             line = s;
