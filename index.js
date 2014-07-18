@@ -13,11 +13,13 @@ module.exports = function (html, opts, fn) {
     }
     var first = true;
     var rower = through.obj(function (row, enc, next) {
-        if (first && Buffer.isBuffer(row)) {
-            var sp = split(JSON.parse);
-            pipeline.unshift(sp);
-            sp.write(row);
+        if (first && (typeof row === 'string' || Buffer.isBuffer(row))) {
             first = false;
+            var sp = split(function (s) {
+                if (s) return JSON.parse(s);
+            });
+            pipeline.unshift(sp);
+            pipeline.write(row);
             return next();
         }
         first = false;

@@ -8,7 +8,7 @@ var html = '<div class="row">'
     + '</div>'
 ;
 
-test('simple', function (t) {
+test('simple obj', function (t) {
     t.plan(1);
     
     var hs = hyperspace(html, function (row) {
