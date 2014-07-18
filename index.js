@@ -1,4 +1,3 @@
-var trumpet = require('trumpet');
 var hyperstream = require('hyperstream');
 var through = require('through2');
 var split = require('split');
