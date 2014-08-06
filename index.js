@@ -11,7 +11,13 @@ module.exports = function (html, opts, fn) {
         fn = opts;
         opts = {};
     }
+    if (!opts) opts = {};
+    
     var first = true;
+    var buckets = {};
+    var keyName = opts.keyName || 'key';
+    if (!Array.isArray(keyName)) keyName = [ keyName ];
+    
     var rower = through.obj(function (row, enc, next) {
         if (first && (typeof row === 'string' || Buffer.isBuffer(row))) {
             first = false;
@@ -24,19 +30,40 @@ module.exports = function (html, opts, fn) {
         }
         first = false;
         
-        var params = fn(row);
+        if (opts.key === true) {
+            buckets[true] = fn(row);
+            next();
+        }
+        else if (opts.key) {
+            var k = getKey(row, keyName);
+            if (k) buckets[k] = fn(row);
+            next();
+        }
+        else sendParams(fn(row), next)
+    }, rend);
+    var pipeline = splicer.obj([ rower ]);
+    return pipeline;
+    
+    function rend () {
+        if (!opts.key) return rower.push(null);
+        
+        var keys = Object.keys(buckets);
+        (function next () {
+            if (keys.length === 0) return rower.push(null);
+            var k = keys.shift();
+            sendParams(buckets[k], next);
+        })();
+    }
+    
+    function sendParams (params, next) {
         if (!params || typeof params !== 'object') return next();
         
         var hs = hyperstream(fix(params));
-        
         hs.pipe(through(write, end));
         hs.end(html);
-        
         function write (buf, enc, next) { rower.push(buf); next() }
         function end () { next() }
-    });
-    var pipeline = splicer.obj([ rower ]);
-    return pipeline;
+    }
 };
 
 function fix (params) {
@@ -66,4 +93,21 @@ function encoder () {
         this.push(encode(buf.toString('utf8')));
         next();
     }));
+}
+
+function keyBucket (opts, fn) {
+    
+    var tr = through.obj(kwrite, kend);
+    return tr;
+    
+    function kwrite (row, enc, next) {
+    }
+}
+
+function getKey (obj, keys) {
+    for (var i = 0; i < keys.length - 1; i++) {
+        obj = obj[keys[i]];
+        if (!obj) return;
+    }
+    return obj[keys[i]];
 }
