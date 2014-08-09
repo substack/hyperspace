@@ -12,7 +12,7 @@ var data = [
 
 test('opts.key === true', function (t) {
     t.plan(1);
-
+    
     var html = '<div>total: <span class="size"></span></div>';
     function render () {
         var size = 0;
@@ -38,7 +38,7 @@ test('opts.key === true', function (t) {
 
 test('typeof opts.key === "string"', function (t) {
     t.plan(1);
-
+    
     var html = '<div>size: <span class="size"></span></div>';
     function render () {
         return hyperspace(html, { keyName: 'size', key: 'size' }, function (row) {
