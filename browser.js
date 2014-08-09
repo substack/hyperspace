@@ -1,4 +1,4 @@
-var through = require('through');
+var through = require('through2');
 var hyperglue = require('hyperglue');
 var domify = require('domify');
 var KeyOf = require('./lib/key_of.js');
@@ -16,7 +16,7 @@ module.exports = function (html, opts, cb) {
     var className = classNameOf(html);
     
     var tr = through(write, end);
-    function write (line) {
+    function write (line, enc, next) {
         var row;
         if (Buffer.isBuffer(line)) {
             line = line.toString('utf8');
@@ -91,14 +91,15 @@ module.exports = function (html, opts, cb) {
         
         this.emit(type, elem);
         
-        if (opts.key !== true) this.queue(elem.outerHTML);
+        if (opts.key !== true) this.push(elem.outerHTML);
+        next();
     }
     
     function end () {
         if (opts.key === true) {
-            this.queue(elements[true].outerHTML);
+            this.push(elements[true].outerHTML);
         }
-        this.queue(null);
+        this.push(null);
     }
     
     tr.prependTo = function (t) {
