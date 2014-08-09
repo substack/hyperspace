@@ -5,6 +5,7 @@ var splicer = require('stream-splicer');
 var encode = require('ent').encode;
 var u8 = require('utf8-stream');
 var combine = require('stream-combiner2');
+var keyOf = require('./lib/key_of.js');
 
 module.exports = function (html, opts, fn) {
     if (typeof opts === 'function') {
@@ -17,6 +18,7 @@ module.exports = function (html, opts, fn) {
     var buckets = {}, bkeys = [];
     var keyName = opts.keyName || 'key';
     if (!Array.isArray(keyName)) keyName = [ keyName ];
+    var kof = opts.key && keyOf(keyName);
     
     var rower = through.obj(function (row, enc, next) {
         if (first && (typeof row === 'string' || Buffer.isBuffer(row))) {
@@ -36,7 +38,7 @@ module.exports = function (html, opts, fn) {
             next();
         }
         else if (opts.key) {
-            var k = getKey(row, keyName);
+            var k = kof(row);
             if (k) {
                 bkeys.push(k);
                 buckets[k] = fn(row);
@@ -103,12 +105,4 @@ function encoder () {
         this.push(encode(buf.toString('utf8')));
         next();
     }));
-}
-
-function getKey (obj, keys) {
-    for (var i = 0; i < keys.length - 1; i++) {
-        obj = obj[keys[i]];
-        if (!obj) return;
-    }
-    return obj[keys[i]];
 }

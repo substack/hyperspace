@@ -14,7 +14,8 @@
     "stream-combiner2": "^1.0.1",
     "stream-splicer": "^1.3.0",
     "through2": "^1.0.0",
-    "utf8-stream": "~0.0.0"
+    "utf8-stream": "~0.0.0",
+    "isarray": "~0.0.1"
   },
   "devDependencies": {
     "concat-stream": "^1.4.4",
