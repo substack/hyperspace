@@ -19,7 +19,7 @@ function render () {
     });
 }
 
-test('opts.key', function (t) {
+test('opts.key === true', function (t) {
     t.plan(2);
     
     var r = render().appendTo(document.body);

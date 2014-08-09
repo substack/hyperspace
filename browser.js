@@ -15,7 +15,7 @@ module.exports = function (html, opts, cb) {
     
     var className = classNameOf(html);
     
-    var tr = through(write, end);
+    var tr = through.obj(write, end);
     function write (line, enc, next) {
         var row;
         if (Buffer.isBuffer(line)) {

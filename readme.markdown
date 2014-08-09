@@ -359,8 +359,9 @@ will work:
 </div>
 ```
 
-If you pass in an `opts.key`, an attribute will set on each top-level element.
-For example, for an `opts.key` of `"abc"`, this html is generated:
+If you pass in an `opts.key`, an attribute will be set on each top-level
+element. For example, for an `opts.key` of `"data-key"`, this html is generated
+when a row comes in where `row.key` is `"abc"`:
 
 ```
 <div data-key="abc" class="row">
@@ -368,6 +369,9 @@ For example, for an `opts.key` of `"abc"`, this html is generated:
   <span class="value"></span>
 </div>
 ```
+
+If `opts.key` is `true` instead of a string,
+
 
 In the browser, when a row comes in with a `row.key` that matches some existing
 `opts.key` attribute, an `'update'` event will fire instead of an `'element`'
