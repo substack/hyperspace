@@ -62,3 +62,30 @@ test('typeof opts.key === "string"', function (t) {
     }
     r.end();
 });
+
+test('keyName', function (t) {
+    t.plan(1);
+    
+    var html = '<div>size: <span class="size"></span></div>';
+    function render () {
+        return hyperspace(html, { keyName: 'xxx', key: 'size' }, function (row) {
+            return { '.size': row.xxx };
+        });
+    }
+    
+    var r = render();
+    r.pipe(concat(function (body) {
+        t.equal(
+            body.toString(),
+            data.map(function (d) {
+                return '<div size="' + d.size + '">size: '
+                    + '<span class="size">' + d.size + '</span></div>';
+            }).join('')
+        );
+    }));
+    
+    for (var i = 0; i < data.length; i++) {
+        r.write({ xxx: data[i].size });
+    }
+    r.end();
+});
