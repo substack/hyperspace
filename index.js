@@ -6,6 +6,7 @@ var encode = require('ent').encode;
 var u8 = require('utf8-stream');
 var combine = require('stream-combiner2');
 var keyOf = require('./lib/key_of.js');
+var has = require('has');
 
 module.exports = function (html, opts, fn) {
     if (typeof opts === 'function') {
@@ -16,9 +17,14 @@ module.exports = function (html, opts, fn) {
     
     var first = true;
     var buckets = {}, bkeys = [];
-    var keyName = opts.keyName || 'key';
+    var keyName = opts.key === true ? 'key' : opts.key;
+    var kattr = opts.attr || (opts.key && 'key');
+    
     if (!Array.isArray(keyName)) keyName = [ keyName ];
-    var kof = opts.key && keyOf(keyName);
+    var kof = opts.key === true
+        ? function () { return true }
+        : keyOf(keyName)
+    ;
     
     var rower = through.obj(function (row, enc, next) {
         if (first && (typeof row === 'string' || Buffer.isBuffer(row))) {
@@ -32,15 +38,10 @@ module.exports = function (html, opts, fn) {
         }
         first = false;
         
-        if (opts.key === true) {
-            buckets[true] = fn(row);
-            if (bkeys.length === 0) bkeys.push(true);
-            next();
-        }
-        else if (opts.key) {
+        if (kattr) {
             var k = kof(row);
             if (k) {
-                bkeys.push(k);
+                if (!has(buckets, k)) bkeys.push(k);
                 buckets[k] = fn(row);
             }
             next();
@@ -64,10 +65,9 @@ module.exports = function (html, opts, fn) {
         if (!params || typeof params !== 'object') return next();
         var fparams = fix(params);
         if (key && key !== true) {
-            var akey = opts.key === true ? 'key' : opts.key;
             var star = '*:first';
             if (!fparams[star]) fparams[star] = {};
-            fparams[star][akey] = key;
+            fparams[star][kattr] = key;
         }
         
         var hs = hyperstream(fparams);
