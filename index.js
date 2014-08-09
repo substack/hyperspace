@@ -14,7 +14,7 @@ module.exports = function (html, opts, fn) {
     if (!opts) opts = {};
     
     var first = true;
-    var buckets = {};
+    var buckets = {}, bkeys = [];
     var keyName = opts.keyName || 'key';
     if (!Array.isArray(keyName)) keyName = [ keyName ];
     
@@ -32,14 +32,18 @@ module.exports = function (html, opts, fn) {
         
         if (opts.key === true) {
             buckets[true] = fn(row);
+            if (bkeys.length === 0) bkeys.push(true);
             next();
         }
         else if (opts.key) {
             var k = getKey(row, keyName);
-            if (k) buckets[k] = fn(row);
+            if (k) {
+                bkeys.push(k);
+                buckets[k] = fn(row);
+            }
             next();
         }
-        else sendParams(fn(row), next)
+        else sendParams(fn(row), null, next)
     }, rend);
     var pipeline = splicer.obj([ rower ]);
     return pipeline;
@@ -47,18 +51,24 @@ module.exports = function (html, opts, fn) {
     function rend () {
         if (!opts.key) return rower.push(null);
         
-        var keys = Object.keys(buckets);
         (function next () {
-            if (keys.length === 0) return rower.push(null);
-            var k = keys.shift();
-            sendParams(buckets[k], next);
+            if (bkeys.length === 0) return rower.push(null);
+            var k = bkeys.shift();
+            sendParams(buckets[k], k, next);
         })();
     }
     
-    function sendParams (params, next) {
+    function sendParams (params, key, next) {
         if (!params || typeof params !== 'object') return next();
+        var fparams = fix(params);
+        if (key && key !== true) {
+            var akey = opts.key === true ? 'key' : opts.key;
+            var star = '*:first';
+            if (!fparams[star]) fparams[star] = {};
+            fparams[star][akey] = key;
+        }
         
-        var hs = hyperstream(fix(params));
+        var hs = hyperstream(fparams);
         hs.pipe(through(write, end));
         hs.end(html);
         function write (buf, enc, next) { rower.push(buf); next() }
@@ -93,15 +103,6 @@ function encoder () {
         this.push(encode(buf.toString('utf8')));
         next();
     }));
-}
-
-function keyBucket (opts, fn) {
-    
-    var tr = through.obj(kwrite, kend);
-    return tr;
-    
-    function kwrite (row, enc, next) {
-    }
 }
 
 function getKey (obj, keys) {
