@@ -12,7 +12,7 @@ module.exports = function (html, opts, cb) {
     if (!opts) opts = {};
     
     var keyName = opts.key === true ? 'key' : opts.key;
-    var kattr = opts.attr || (opts.key && 'key');
+    var kattr = opts.attr === undefined ? (opts.key && 'key') : opts.attr;
     var kof = opts.key === true
         ? function () { return true }
         : keyOf(keyName)
@@ -75,6 +75,9 @@ module.exports = function (html, opts, cb) {
             type = 'element';
         }
         if (k) elements[k] = elem;
+        if (k && kattr && row[keyName]) {
+            elem.setAttribute(kattr, row[keyName]);
+        }
         
         for (var i = 0; i < streams.length; i++) (function (ks) {
             var key = ks[0], stream = ks[1];
