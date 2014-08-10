@@ -359,9 +359,13 @@ will work:
 </div>
 ```
 
-If you pass in an `opts.key`, an attribute will be set on each top-level
-element. For example, for an `opts.key` of `"data-key"`, this html is generated
-when a row comes in where `row.key` is `"abc"`:
+If you pass in an `opts.key`, the value of `row[opts.key]` will be set as a
+`key` attribute on each top-level element and rows that resolve to the same key
+will update existing content. The attribute name to set is controlled by
+`opts.attr` and defaults to `'key'` when `opts.key` is set.
+
+For example,for an `opts.key` of `"key"` and an `opts.attr` of `'data-key'`,
+this html is generated for a row with: `{ key: 'abc' }`:
 
 ```
 <div data-key="abc" class="row">
@@ -370,21 +374,14 @@ when a row comes in where `row.key` is `"abc"`:
 </div>
 ```
 
-If `opts.key` is `true` instead of a string,
-
-
-In the browser, when a row comes in with a `row.key` that matches some existing
-`opts.key` attribute, an `'update'` event will fire instead of an `'element`'
+In the browser, when a row comes in with a `row.key` that matches a key that has
+already been seen, and `'update'` event will fire instead of an `'element'`
 event and the contents of the row dom node will be updated in place instead of
 creating a new element from the `html` string.
 
-If you don't want to use `row.key`, you can use a custom key name controlled by
-`opts.keyName`.
-
-Additionally, you can pass in a custom key resolver function as `opts.key(row)`
-that should return the key name. If you pass in `true` for `opts.key`, each row
-will resolve to the same element for updates. This is useful for aggregate
-elements that sum up a stream of rows in-place.
+`opts.key` can be a string, a `function (row) {}` that returns the keyname to
+use for a given row, or an array of strings that define a path to the key from
+the row root.
 
 # browser methods
 
