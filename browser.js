@@ -1,7 +1,7 @@
 var through = require('through2');
 var hyperglue = require('hyperglue');
 var domify = require('domify');
-var KeyOf = require('./lib/key_of.js');
+var keyOf = require('./lib/key_of.js');
 var json = require('jsonify');
 
 module.exports = function (html, opts, cb) {
@@ -10,7 +10,13 @@ module.exports = function (html, opts, cb) {
         opts = {};
     }
     if (!opts) opts = {};
-    var keyOf = KeyOf(opts.key);
+    
+    var keyName = opts.key === true ? 'key' : opts.key;
+    var kattr = opts.attr || (opts.key && 'key');
+    var kof = opts.key === true
+        ? function () { return true }
+        : keyOf(keyName)
+    ;
     var elements = {};
     
     var className = classNameOf(html);
@@ -21,11 +27,6 @@ module.exports = function (html, opts, cb) {
         if (Buffer.isBuffer(line)) {
             line = line.toString('utf8');
         }
-        else if (isInt8Array(line)) {
-            var s = '';
-            for (var i = 0; i < line.length; i++) s += line[i];
-            line = s;
-        }
         if (typeof line === 'string') {
             try { row = json.parse(line) }
             catch (err) { this.emit('error', err) }
@@ -33,7 +34,7 @@ module.exports = function (html, opts, cb) {
         else row = line;
         
         if (opts.key && row && row.type === 'del') {
-            var k = keyOf(row);
+            var k = kof(row);
             if (k && elements[k]) {
                 return this.emit('delete', elements[k]);
             }
@@ -63,7 +64,7 @@ module.exports = function (html, opts, cb) {
         })(keys[i]);
         
         var type, elem;
-        var k = opts.key && keyOf(row);
+        var k = kof && kof(row);
         
         if (k && elements[k]) {
             elem = hyperglue(elements[k], res);
@@ -243,13 +244,6 @@ function getElem (target) {
         return document.querySelector(target);
     }
     return target;
-}
-
-function isInt8Array (line) {
-    return line && typeof line === 'object'
-        && line.constructor === 'function'
-        && line.constructor.name === 'Int8Array'
-    ;
 }
 
 function isStream (x) {
