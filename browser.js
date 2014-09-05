@@ -36,7 +36,8 @@ module.exports = function (html, opts, cb) {
         if (opts.key && row && row.type === 'del') {
             var k = kof(row);
             if (k && elements[k]) {
-                return this.emit('delete', elements[k]);
+                this.emit('delete', elements[k]);
+                return next();
             }
         }
         
