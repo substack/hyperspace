@@ -9,7 +9,7 @@ var keyOf = require('./lib/key_of.js');
 var has = require('has');
 
 module.exports = function (html, opts, fn) {
-    if (typeof html !== 'string' || !Buffer.isBuffer(html)) {
+    if (typeof html !== 'string' && !Buffer.isBuffer(html)) {
         throw new Error('invalid html, not a string or buffer');
     }
     if (typeof opts === 'function') {
