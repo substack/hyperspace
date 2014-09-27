@@ -8,7 +8,10 @@ var html = '<div class="row">\n'
 
 var hs = hyperspace(html, function (row) {
     return {
-        '.who': row.who,
+        '.who': {
+            _text: row.who,
+            href: '/users/' + row.who
+        },
         '.message': row.message
     };
 });
