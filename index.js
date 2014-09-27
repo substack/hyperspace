@@ -91,9 +91,6 @@ function fix (params) {
         else if (typeof p === 'string') {
             res[key] = encode(p);
         }
-        else if (p && typeof p === 'object' && p._text && !p._html) {
-            p._html = encode(p._text);
-        }
         else {
             res[key] = p;
         }

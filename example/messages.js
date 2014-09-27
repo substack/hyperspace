@@ -1,14 +1,14 @@
 var hyperspace = require('../');
 
 var html = '<div class="row">\n'
-    + '<div class="who"></div>\n'
+    + '<div class="who"><a></a></div>\n'
     + '<div class="message"></div>\n'
     + '</div>\n'
 ;
 
 var hs = hyperspace(html, function (row) {
     return {
-        '.who': {
+        '.who a': {
             _text: row.who,
             href: '/users/' + row.who
         },

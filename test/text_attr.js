@@ -13,7 +13,7 @@ test('simple obj', function (t) {
     
     var hs = hyperspace(html, function (row) {
         return {
-            '.who': {
+            '.who a': {
                 _text: row.who,
                 href: '/users/' + row.who
             },
