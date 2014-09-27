@@ -2,3 +2,4 @@
 example/*/static/bundle.js
 example/*/data.txt
 example/*/.gitignore
+example/*/node_modules
