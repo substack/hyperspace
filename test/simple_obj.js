@@ -18,7 +18,7 @@ test('simple obj', function (t) {
         };
     });
     hs.pipe(concat(function (body) {
-        t.equal(fix(body.toString('utf8')), [
+        t.equal(body.toString('utf8'), [
             '<div class="row">'
             + '<div class="who">robot</div>'
             + '<div class="message">beep boop</div>'
@@ -29,7 +29,7 @@ test('simple obj', function (t) {
             + '</div>',
             '<div class="row">'
             + '<div class="who">mouse</div>'
-            + '<div class="message">&#60;squeak&#62;</div>'
+            + '<div class="message">&#x3C;squeak&#x3E;</div>'
             + '</div>'
         ].join(''));
     }));
@@ -39,7 +39,3 @@ test('simple obj', function (t) {
     hs.write({ who: 'mouse', message: '<squeak>' });
     hs.end();
 });
-
-function fix (s) {
-    return s.replace(/&lt;/g, '&#60;').replace(/&gt;/, '&#62;');
-}
