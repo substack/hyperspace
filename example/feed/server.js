@@ -14,9 +14,10 @@ var server = http.createServer(function (req, res) {
         var rs = fs.createReadStream(__dirname + '/static/index.html');
         rs.pipe(hs).pipe(res);
     }
-    else ecstatic(req, res)
+    else ecstatic(req, res);
 });
 server.listen(8000);
+console.log('Listening on :8000');
 
 var shoe = require('shoe');
 var sock = shoe(function (stream) {
