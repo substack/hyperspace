@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "brfs": "^1.4.0"
+  },
+  "dependencies": {
+    "shoe": "0.0.15"
+  }
+}

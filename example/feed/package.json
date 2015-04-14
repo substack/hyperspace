@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "start": "npm run build && npm run server",
+    "build": "browserify -t brfs -d browser.js > static/bundle.js",
+    "server": "node server.js"
+  },
+  "dependencies": {
+    "ecstatic": "^0.7.3",
+    "hyperstream": "^1.2.2",
+    "shoe": "0.0.15",
+    "slice-file": "^0.2.1"
+  },
+  "devDependencies": {
+    "brfs": "^1.4.0"
+  }
+}
