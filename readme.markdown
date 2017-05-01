@@ -60,10 +60,8 @@ from the `row.html` which looks like:
 row.html:
 
 ``` html
-<div class="row">
   <div class="who"></div>
   <div class="message"></div>
-</div>
 ```
 
 It's easy to pipe some data the renderer in stdout
